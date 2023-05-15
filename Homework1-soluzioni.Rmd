@@ -35,22 +35,26 @@ segments(x0=(1:4)-0.4, x1=(1:4)+0.4, y0=means, y1=means, col="red", lwd=2.5)
 
 ```{r}
 
-insurance$catbmi <- cut(insurance$bmi, breaks=c(0, 18.5, 25, 30, max(insurance$bmi)+1), labels=c("underweight", "normal", "overweight", "obese"))
-histogram(~charges | catbmi, data=insurance, layout=c(1,4), breaks = (0:6)*max(insurance$charges+1)/6,aspect=0.2, ylim=c(0,70))
+insurance$catbmi <- cut(insurance$bmi, breaks = c(0, 18.5, 25, 30, max(insurance$bmi) + 1), labels = c("Underweight", "Normal", "Overweight", "Obese"))
 
+           histogram(~ charges | catbmi, data = insurance, layout = c(1, 4),
+                        breaks = (0:6) * max(insurance$charges + 1) / 6, aspect = 0.2, type = "density",
+                        panel = function(x, ...) {
+                          panel.histogram(x, ..., col="orange")
+                          panel.densityplot(x, col = "darkblue", lwd=2, ...)
+                        },
+           key=list(space="right",
+         lines=list(col=c("orange","darkblue"), lwd=2),
+         text=list(c("Histogram"," Density")))
+)
+```
 
-# Creazione della variabile "catbmi" usando cut()
-insurance$catbmi <- cut(insurance$bmi, breaks = c(0, 18.5, 25, 30, max(insurance$bmi) + 1),
-                        labels = c("underweight", "normal", "overweight", "obese"))
+```{r}
+prop.sex.bmi <- prop.table(table(insurance$sex,insurance$catbmi), 1)
+barplot(prop.sex.bmi, beside=T)
+prop.diff <- prop.sex.bmi[1,] - prop.sex.bmi[2,]
+barplot(prop.diff, ylim=c(-0.05, 0.05))
 
-# Creazione del grafico istogramma con sovrapposizione della densità
-histogram(~ charges | catbmi, data = insurance, layout = c(1, 4),
-          breaks = (0:6) * max(insurance$charges + 1) / 6, aspect = 0.2, type = "density",
-          panel = function(x, ...) {
-            panel.histogram(x, ...)
-            panel.densityplot(x, col = "red", ...)
-          })
-  
 ```
 
 
