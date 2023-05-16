@@ -4,13 +4,38 @@ author: "Costanza Colauzzi, Gabriele Granzotto, Davide Zorzetto"
 date: "2023-05-15"
 output: html_document
 ---
+## Introduzione
+Il dataset \(\texttt{insurance.csv}\) descrive le spese mediche sostenute da una compagnia assicurativa statunitense per 1338 soggetti. Le variabili presenti nel dataset sono:
 
-```{r}
+- \(\texttt{age}\): età dell’assicurato
+- \(\texttt{sex}\): genere dell’assicurato
+- \(\texttt{bmi}\): indice di massa corporea
+- \(\texttt{children}\): numero di figli a carico
+- \(\texttt{smoker}\): fumatore
+- \(\texttt{region}\): l’area di residenza dell’assicurato negli Stati Uniti
+- \(\texttt{charges}\): le spese mediche individuali fatturate dall’assicurazione.
+
+Per la creazione dei grafici è stato usato sia la libreria base, sia *"lattice"*.
+
+```{r, echo=FALSE}
 insurance <- read.csv("insurance.csv")
 library(lattice)
 ```
 
-```{r}
+### a.
+
+Nel Dataset sono presenti *quattro* variabili categoriali:
+
+
+- **Sex**, 
+- **Children**, 
+- **Smoker**, 
+- **Region**
+
+Sono state rappresentate attraverso dei **Barplot** che evidenziassero la *frequenza relativa*. \
+Il valore più frequente è stato evidenziato con un <span style="color:red">**bordo rosso**</span>.
+
+```{r, echo=FALSE}
 sex <- prop.table(table(insurance$sex))
 children <- prop.table(table(insurance$children))
 smoker <- prop.table(table(insurance$smoker))
@@ -22,7 +47,18 @@ barplot(smoker, main="Smoker in Insurance", col=c("yellow", "black"), border=c("
 barplot(region, main="Region in Insurance", col=2:5, border=c("darkgrey","darkgrey","red", "darkgrey"))
 ```
 
-```{r}
+### b.
+
+Nel grafico **Boxplot** sono state rappresentate le spese mediche rispetto al numero di figli divisi in *quattro* categorie: 
+
+- **0**
+- **1**
+- **2**
+- **3+**
+
+Al *Boxplot* sono state inserite delle <span style="color:Red">**barre rosse**</span> per indicare la **media** della distribuzione.
+
+```{r, echo=FALSE}
 insurance$new.children[insurance$children == 0] <- "0"
 insurance$new.children[insurance$children == 1] <- "1"
 insurance$new.children[insurance$children == 2] <- "2"
@@ -32,8 +68,23 @@ means <- tapply(insurance$charges, insurance$new.children, mean)
 segments(x0=(1:4)-0.4, x1=(1:4)+0.4, y0=means, y1=means, col="red", lwd=2.5)
 
 ```
+### c.
 
-```{r}
+A partire dalla variabile **bmi** è stata aggiunta una nuova variabile **bmicat** che utlizza le seguenti categorie:
+
+- **underweight**   : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+bmi $<$ 18.5
+- **normal**        : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+18.5 $\leq$ bmi $\leq$ 24.99
+- **overweight**    : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+25 $\leq$ bmi $<$ 30
+- **obese**         : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+bmi $\geq$ 30
+
+Il grafico è stato prodotto in *"lattice"*.\
+Dopo un'analisi l'Istogramma è stato diviso in *sei* blocchi, considerati sufficienti per rappresentare i dati.
+
+```{r, echo=FALSE}
 
 insurance$catbmi <- cut(insurance$bmi, breaks = c(0, 18.5, 25, 30, max(insurance$bmi) + 1), labels = c("Underweight", "Normal", "Overweight", "Obese"))
 
@@ -49,7 +100,11 @@ insurance$catbmi <- cut(insurance$bmi, breaks = c(0, 18.5, 25, 30, max(insurance
 )
 ```
 
-```{r}
+### d.
+
+Come primo grafico per tentare di esplorare la relazione tra **bmicat** e **sex** sono stati usati due **Barplot Affiancati** delle *frequenze relative* di **sex** condizionato a **bmicat**. \
+Successivamente 
+```{r, echo=FALSE}
 prop.sex.bmi <- prop.table(table(insurance$sex,insurance$catbmi), 1)
 barplot(prop.sex.bmi, beside=T)
 prop.diff <- prop.sex.bmi[1,] - prop.sex.bmi[2,]
