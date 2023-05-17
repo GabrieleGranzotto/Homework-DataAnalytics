@@ -28,9 +28,9 @@ library(lattice)
 
 Nel Dataset sono presenti *quattro* variabili categoriali:
 
--   **Sex**,
--   **Children**,
--   **Smoker**,
+-   **Sex**
+-   **Children**
+-   **Smoker**
 -   **Region**
 
 Sono state rappresentate attraverso dei **Barplot** che evidenziassero la *frequenza relativa*.\
@@ -110,30 +110,45 @@ prop.sex.bmi <- prop.table(table.sex.bmi, 1)
 barplot(sex.conditioned.bmi, beside=T, ylim=c(0,0.8), col=c("pink","lightblue","pink","lightblue","pink","lightblue","pink","lightblue"))
 legend(5.5, 0.8, legend = c("Male", "Female"), fill = c("lightblue", "pink"))
 ```
-Da questo grafico si evince che, tranne che nel gruppo dei *Underweigth*, c'è una sostanziale indipendenza tra *maschi* e *femmine*. \
-Abbiamo cercato di indagare su questa presunta differenza tra *maschi* e *femmine* negli *Underweigth* quindi abbiamo disegnato il grafico delle *frequenze relative* di **catbmi** condizionato a **sex**. \
+
+Da questo grafico si evince che, tranne che nel gruppo dei *Underweigth*, c'è una sostanziale indipendenza tra *maschi* e *femmine*.\
+Abbiamo cercato di indagare sulla presunta differenza tra *maschi* e *femmine* negli *Underweigth* quindi abbiamo disegnato il grafico delle *frequenze relative* di **catbmi** condizionato a **sex**.\
 
 ```{r, echo=FALSE}
 barplot(prop.sex.bmi, beside=T, ylim=c(0,0.8), col=c("pink","lightblue","pink","lightblue","pink","lightblue","pink","lightblue"))
 legend(5.5, 0.8, legend = c("Male", "Female"), fill = c("lightblue", "pink"))
 ```
-Questo grafico fa esaltare il fatto che sia per *maschi* che per *femmine* sono presenti pochi dati della categoria *Underweigth*. \
-Quindi pur avendo in proporzione un discostamente nel numero analogo, messo in relazione con le altre colonne risalta.
+
+Questo grafico inizia a far capire il perché si crea quella differenza così grande.\
+Se si vede la differenza dei valori tra *maschi* e *femmine* in un **Barplot** si potrebbe essere indotti a credere che le donne sono più propense ad essere sottopeso.\
+
+```{r, echo=FALSE}
+prop.diff <- abs(sex.conditioned.bmi[1,] - sex.conditioned.bmi[2,])
+barplot(prop.diff, col=c("red", "green", "green", "green"), border="darkgrey")
+```
+
+Ma questo dai dati che abbiamo non può essere evinto, perché abbiamo in possesso troppi pochi dati per quella categoria.\
+Se osserviamo la distribuzione dei dati nelle *quattro* categorie ci rendiamo conto di come i dati siano distribuite tra esse.
 
 ```{r, echo=FALSE}
 
 table.cat <- prop.table(table(insurance$catbmi))
-prop.diff <- abs(sex.conditioned.bmi[1,] - sex.conditioned.bmi[2,])
-#barplot(prop.diff, col=c("red", "green", "green", "green"), border="darkgrey")
 barplot(table.cat, col=c("red", "green", "green", "green"), border="darkgrey")
+```
 
+Infine, il test del $\chi^2$ mostra come non si riscontri correlazione tra il *sesso* e il *bmi*.
 
-
-
+```{r, echo=FALSE}
 chisq.test(table.sex.bmi, correct = F)
 ```
 
 ### e.
+
+L'immagine sottostante è composta da *cinque* grafici:
+
+- Quello centrale è il **Grafico a Dispersione** delle spese mediche rapportate con l'ètà, in <span style="color:green">**verde**</span> i non fumatori mentre in <span style="color:purple">**viola**</span> i fumatori;
+- Sono presenti due **Boxplot** che rappresentano la distribuzione marginale delle *Spese Mediche* e *Età del Campione*;
+- Vi sono anche due **Distribuzioni con il Metodo del Nucleo** di *Età* e *Spese Mediche* condizionatamente alla condizione *Fumatore*.
 
 ```{r}
 smoker <- as.numeric(factor(insurance$smoker))
@@ -152,16 +167,14 @@ par(fig=c(0, 0.205, 0.15, 0.85), new=T)
 boxplot(insurance$charges, main=NULL, ylim=c(0,70000), col="lightblue", border="darkblue")
 
 par(fig=c(0.15, 0.85, 0.765, 1), new=T)
-plot(density(insurance$age[insurance$smoker=="no"]), col=19, main="", xlim=c(16, 65), xaxt='n')
-lines(density(insurance$age[insurance$smoker=="yes"]), col=6, main=NULL)
+plot(density(insurance$age[insurance$smoker=="no"]), col=19, lwd=1.5, main="", xlim=c(16, 65), xaxt='n')
+lines(density(insurance$age[insurance$smoker=="yes"]), col=6, lwd=1.5, main=NULL)
 
-par(fig=c(0.795, 1, 0.15, 0.85), new=T)
+par(fig=c(0.793, 1, 0.15, 0.85), new=T)
 density.charges.no <- density(insurance$charges[insurance$smoker=="no"])
-plot(density.charges.no$y, density.charges.no$x, type = "l", col=19, main="", ylim=c(0,70000), yaxt='n')
+plot(density.charges.no$y, density.charges.no$x, type = "l", col=19, lwd=1.5, main="", ylim=c(0,70000), yaxt='n')
 
 density.charges.yes <- density(insurance$charges[insurance$smoker=="yes"])
-lines(density.charges.yes$y, density.charges.yes$x, type = "l", col=6, main=NULL)
+lines(density.charges.yes$y, density.charges.yes$x, type = "l", col=6, lwd=1.5, main=NULL)
 
 ```
-
-
