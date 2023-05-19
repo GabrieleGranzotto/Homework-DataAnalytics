@@ -1,8 +1,10 @@
 ---
 title: "Homework 1 - Data Analytics"
 author: "Costanza Colauzzi, Gabriele Granzotto, Davide Zorzetto"
-date: "2023-05-15"
-output: html_document
+date: "2023-05-19"
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ## Introduzione
@@ -17,7 +19,7 @@ Il dataset $\texttt{insurance.csv}$ descrive le spese mediche sostenute da una c
 -   $\texttt{region}$: l'area di residenza dell'assicurato negli Stati Uniti
 -   $\texttt{charges}$: le spese mediche individuali fatturate dall'assicurazione.
 
-Per la creazione dei grafici è stato usato sia la libreria base, sia *"lattice"*.
+Per la creazione dei grafici è stata usata sia la libreria base, sia *"lattice"*.
 
 ```{r, echo=FALSE}
 insurance <- read.csv("insurance.csv")
@@ -76,11 +78,11 @@ segments(x0=(1:4)-0.4, x1=(1:4)+0.4, y0=means, y1=means, col="red", lwd=2.5)
 ```
 
 Si nota che la **media** ha valori superiori della **mediana** in quanto sono presenti numerosi valori oltre al baffo superiore del *boxplot*. \
-Questo rende la distribuzione assimmetrica con una coda lunga verso i valori elevati di **Charges**.
+Questo rende la distribuzione asimmetrica con una coda lunga verso i valori elevati di **Charges**.
 
 ### c.
 
-A partire dalla variabile **bmi** è stata aggiunta una nuova variabile **catbmi** che utlizza le seguenti categorie:
+A partire dalla variabile **bmi** è stata aggiunta una nuova variabile **catbmi** che utilizza le seguenti categorie:
 
 -   **underweight** :              bmi $<$ 18.5
 -   **normal** :           18.5 $\leq$ bmi $\leq$ 24.99
@@ -115,7 +117,7 @@ table.sex.bmi <- table(insurance$sex,insurance$catbmi)
 table.sex.bmi
 sex.conditioned.bmi <- prop.table(table.sex.bmi, 2)
 prop.sex.bmi <- prop.table(table.sex.bmi, 1)
-barplot(sex.conditioned.bmi, beside=T, ylim=c(0,0.8), col=c("pink","lightblue","pink","lightblue","pink","lightblue","pink","lightblue"))
+barplot(sex.conditioned.bmi, beside=T, ylim=c(0,0.8), col=c("pink","lightblue","pink","lightblue","pink","lightblue","pink","lightblue"), main="Grafico a Barre Sex~Catbmi")
 legend(5.5, 0.8, legend = c("Male", "Female"), fill = c("lightblue", "pink"))
 ```
 
@@ -123,7 +125,7 @@ Da questo grafico si osserva che, tranne che nel gruppo dei *Underweight*, c'è 
 Abbiamo cercato di indagare sulla presunta differenza tra *maschi* e *femmine* negli *Underweight* quindi abbiamo disegnato il grafico delle *frequenze relative* di **catbmi** condizionato a **sex**.\
 
 ```{r, echo=FALSE}
-barplot(prop.sex.bmi, beside=T, ylim=c(0,0.8), col=c("pink","lightblue","pink","lightblue","pink","lightblue","pink","lightblue"))
+barplot(prop.sex.bmi, beside=T, ylim=c(0,0.8), col=c("pink","lightblue","pink","lightblue","pink","lightblue","pink","lightblue"), main="Grafico a Barre Catbmi~Sex")
 legend(5.5, 0.8, legend = c("Male", "Female"), fill = c("lightblue", "pink"))
 ```
 
@@ -132,7 +134,7 @@ Se si vede la differenza dei valori tra *maschi* e *femmine* in un **Barplot** s
 
 ```{r, echo=FALSE}
 prop.diff <- abs(sex.conditioned.bmi[1,] - sex.conditioned.bmi[2,])
-barplot(prop.diff, col=c("red", "green", "green", "green"), border="darkgrey")
+barplot(prop.diff, col=c("red", "green", "green", "green"), border="darkgrey", main="Differenze tra Maschi e Femmine nel Grafico Sex~Catbmi")
 ```
 
 Ma questo dai dati che abbiamo non può essere evinto con certezza, poiché, come possiamo notare dal grafico sottostante, i dati relativi alla categoria **Underweight** a nostra disposizione sono in numero ridotto.
@@ -140,7 +142,7 @@ Ma questo dai dati che abbiamo non può essere evinto con certezza, poiché, com
 ```{r, echo=FALSE}
 
 table.cat <- prop.table(table(insurance$catbmi))
-barplot(table.cat, col=c("red", "green", "green", "green"), border="darkgrey")
+barplot(table.cat, col=c("red", "green", "green", "green"), border="darkgrey", main="Distribuzione dei dati nelle varie categorie di Catbmi")
 ```
 
 Infine, il test del $\chi^2$ mostra come ci sia poca evidenza contro l'ipotesi che le variabili *sesso* e *bmi* siano indipendenti, rendendo improbabile la loro associazione.
@@ -153,7 +155,7 @@ chisq.test(table.sex.bmi, correct = F)
 
 L'immagine sottostante è composta da *cinque* grafici:
 
-- Quello centrale è il **Grafico a Dispersione** delle spese mediche rapportate con l'ètà, in <span style="color:green">**verde**</span> i non fumatori mentre in <span style="color:purple">**viola**</span> i fumatori;
+- Quello centrale è il **Grafico a Dispersione** delle spese mediche rapportate con l'età, in <span style="color:green">**verde**</span> i non fumatori mentre in <span style="color:purple">**viola**</span> i fumatori;
 - Sono presenti due **Boxplot** che rappresentano la distribuzione marginale delle *Spese Mediche* e *Età del Campione*;
 - Vi sono anche due **Distribuzioni con il Metodo del Nucleo** di *Età* e *Spese Mediche* condizionatamente alla condizione *Fumatore*.
 
@@ -185,3 +187,9 @@ density.charges.yes <- density(insurance$charges[insurance$smoker=="yes"])
 lines(density.charges.yes$y, density.charges.yes$x, type = "l", col=6, lwd=1.5, main=NULL)
 
 ```
+
+\
+\
+\
+\
+\
