@@ -1,0 +1,116 @@
+---
+title: "Homework 2 - Data Analytics"
+author: "Gabriele Granzotto"
+date: "2023-06-01"
+output: html_document
+---
+
+```{r}
+
+insurance <- read.csv("insurance.csv", stringsAsFactors=TRUE)
+insurance <- insurance[, -1]
+library(ellipse)
+
+```
+
+
+
+#a
+
+```{r}
+
+insurance_numeric <- subset(insurance, select=c(charges, bmi, children))
+
+insurance_numeric$smoker[insurance$smoker=="yes"] <- 1
+insurance_numeric$smoker[insurance$smoker=="no"] <- 0
+
+insurance_numeric$sex[insurance$sex=="male"] <- 2
+insurance_numeric$sex[insurance$sex=="female"] <- 1
+
+insurance_numeric$region[insurance$region=="southwest"] <- 1
+insurance_numeric$region[insurance$region=="northwest"] <- 2
+insurance_numeric$region[insurance$region=="southeast"] <- 3
+insurance_numeric$region[insurance$region=="northeast"] <- 4
+
+correlation <- cor(insurance_numeric)
+round(correlation, 2)
+plotcorr(correlation)
+
+```
+
+#b
+
+```{r}
+
+linear_fit <- lm(charges~age, data=insurance)
+
+par(mfrow=c(2,2))
+plot(linear_fit)
+summary(linear_fit)
+
+```
+#c
+```{r}
+
+plot(insurance$age, insurance$charges)
+abline(linear_fit, col="red", lwd=2)
+
+x0 = 35
+x1 = 36
+y0 = predict(linear_fit, data.frame(age = x0))
+y1 = predict(linear_fit, data.frame(age = x1))
+segments(x0, y0, x0, 0, col = "blue", lty="dashed")
+segments(x1, y1, x1, 0, col = "blue", lty="dashed")
+segments(0, y0, x0, y0, col = "blue", lty="dashed")
+segments(0, y1, x1, y1, col = "blue", lty="dashed")
+
+```
+
+#d
+```{r}
+
+quaratic_fit_smoker <- lm(charges~I(age^2) + smoker, data=insurance)
+linear_fit_smoker2 <- lm(charges~age + smoker, data=insurance)
+AIC(linear_fit, quaratic_fit_smoker, linear_fit_smoker2)
+
+```
+
+#e
+```{r}
+
+par(mfrow=c(2,2))
+plot(quaratic_fit_smoker)
+summary(quaratic_fit_smoker)
+
+par(mfrow=c(1,1))
+plot(charges ~ age, data = insurance)
+curve(predict(quaratic_fit_smoker, data.frame(age = x, smoker = "no")), add = T, col="red", lwd=2)
+curve(predict(quaratic_fit_smoker, data.frame(age = x, smoker = "yes")), add = T, col="red", lwd=2)
+
+x0 = 35
+x1 = 36
+y0 = predict(quaratic_fit_smoker, data.frame(age = x0, smoker = "no"))
+y1 = predict(quaratic_fit_smoker, data.frame(age = x1, smoker = "no"))
+segments(x0, y0, x0, 0, col = "blue", lty="dashed")
+segments(x1, y1, x1, 0, col = "blue", lty="dashed")
+segments(0, y0, x0, y0, col = "blue", lty="dashed")
+segments(0, y1, x1, y1, col = "blue", lty="dashed")
+
+x0 = 40
+x1 = 41
+y0 = predict(quaratic_fit_smoker, data.frame(age = x0, smoker = "yes"))
+y1 = predict(quaratic_fit_smoker, data.frame(age = x1, smoker = "yes"))
+segments(x0, y0, x0, 0, col = "blue", lty="dashed")
+segments(x1, y1, x1, 0, col = "blue", lty="dashed")
+segments(0, y0, x0, y0, col = "blue", lty="dashed")
+segments(0, y1, x1, y1, col = "blue", lty="dashed")
+
+```
+#F
+```{r}
+
+predict(quaratic_fit_smoker, data.frame(age = 40, smoker = "yes"))
+predict(quaratic_fit_smoker, data.frame(age = 40, smoker = "no"))
+
+```
+
